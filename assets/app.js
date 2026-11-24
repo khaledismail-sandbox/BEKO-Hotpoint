@@ -87,6 +87,11 @@ function render(){shell();const pages={home,listing:()=>listing(false),search:()
 function changeArea(){shop.postcodeChecked=false;shop.preferences=false;shop.slot=null;shop.deliveryProgress.services=false;persist();A.setReadiness(false);if(screen==='basket')readyDialog();else render()}
 async function abandon(stage){await A.track('Basket Abandoned',{...basketProps(),abandonment_stage:stage,abandonment_trigger:stage==='delivery_setup'?'delivery_setup':'other'});shop.slot=null;shop.deliveryProgress.services=false;persist();await A.flush();location.assign(url(''))}
 async function boot(){
+ if(screen==='home' && A.visualEditor){
+  render();
+  await A.openVisualEditor();
+  return;
+ }
  // Protect checkout even on a cold direct URL. Unprepared identities must complete the gate.
  if(screen==='checkout'){
   const persona=A.state();
