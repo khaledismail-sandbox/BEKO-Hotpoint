@@ -4,7 +4,18 @@
 'use strict';
 const KEY='1c867be258598bb9e3e42f64ae6b954d', STORE='hotpoint.session.v1', preview=document.body.dataset.screen==='preview';
 if(preview)return;
-const visualEditor = new URLSearchParams(location.search).get('VISUAL_EDITOR') === 'true';
+const editorParam = new URLSearchParams(location.search).get('VISUAL_EDITOR');
+const editorTabKey = 'hotpoint.visual-editor';
+let visualEditor = editorParam === 'true';
+// Amplitude removes the launch parameter after opening the overlay. Carry editor
+// mode through storefront navigation only in the tab opened by the editor.
+try {
+ if (editorParam === null && window.opener && sessionStorage.getItem(editorTabKey) === '1') {
+  visualEditor = true;
+ }
+ if (visualEditor) sessionStorage.setItem(editorTabKey, '1');
+ else sessionStorage.removeItem(editorTabKey);
+} catch { /* Direct editor launches also work when tab storage is unavailable. */ }
 const SOURCE_MAPPING={"sources":{"search":[["google","www.google.com"],["bing","www.bing.com"],["duckduckgo","duckduckgo.com"]],"organic search":[["google","www.google.com"],["bing","www.bing.com"],["duckduckgo","duckduckgo.com"],["yahoo","search.yahoo.com"],["ecosia","www.ecosia.org"],["brave","search.brave.com"],["qwant","www.qwant.com"],["startpage","www.startpage.com"],["mojeek","www.mojeek.com"]],"social":[["facebook","www.facebook.com"],["instagram","www.instagram.com"],["linkedin","www.linkedin.com"],["twitter","twitter.com"],["tiktok","www.tiktok.com"],["snapchat","www.snapchat.com"],["pinterest","www.pinterest.com"],["reddit","www.reddit.com"],["threads","www.threads.net"]],"affiliate":[["awin","www.awin.com"],["quidco","www.quidco.com"],["topcashback","www.topcashback.co.uk"],["hotukdeals","www.hotukdeals.com"]],"llm":[["open_ai","chatgpt.com"],["anthropic","claude.ai"],["microsoft_ai","copilot.microsoft.com"],["you_com","you.com"],["phind","phind.com"],["cohere","cohere.com"],["mistral","mistral.ai"]]},"channels":{"search":"Paid Search","organic search":"Organic Search","social":"Paid Social","affiliate":"Affiliates","llm":"LLM Search","direct":"Direct"}};
 const authorization={approved:true,reference:'Khaled: Go — 18 November 2026',privacyVerified:false};
 const registrations=[];
